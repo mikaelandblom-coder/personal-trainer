@@ -3,7 +3,7 @@ import type { ReactNode } from 'react'
 import { CATALOG } from './data/exercises'
 import { todayISO } from './lib/dates'
 import { load, save } from './lib/storage'
-import type { AppData, Exercise, Session, Settings } from './types'
+import type { Activity, AppData, Exercise, Session, Settings } from './types'
 
 interface Store {
   data: AppData
@@ -17,6 +17,8 @@ interface Store {
   removeSet: (exerciseId: string, index: number) => void
   toggleFlag: (exerciseId: string, index: number) => void
   setNote: (exerciseId: string, note: string) => void
+  logActivity: (type: string, minutes: number) => void
+  removeActivity: (index: number) => void
   addExercise: (exercise: Exercise) => void
   deleteExercise: (id: string) => void
   toggleHidden: (id: string) => void
@@ -27,7 +29,25 @@ interface Store {
 const Ctx = createContext<Store | null>(null)
 
 function newSession(date: string): Session {
-  return { id: `${date}-${Math.random().toString(36).slice(2, 8)}`, date, entries: [] }
+  return { id: `${date}-${Math.random().toString(36).slice(2, 8)}`, date, entries: [], activities: [] }
+}
+
+/** Applies `fn` to today's session, creating it if this is the day's first log. */
+function editToday(data: AppData, fn: (session: Session) => void): AppData {
+  const date = todayISO()
+  const sessions = [...data.sessions]
+  let index = sessions.findIndex((s) => s.date === date)
+  if (index === -1) {
+    sessions.push(newSession(date))
+    index = sessions.length - 1
+  }
+  const session = structuredClone(sessions[index])
+  fn(session)
+  sessions[index] = session
+  return {
+    ...data,
+    sessions: sessions.filter((s) => s.entries.length > 0 || (s.activities?.length ?? 0) > 0),
+  }
 }
 
 /**
@@ -38,25 +58,17 @@ function newSession(date: string): Session {
 function editEntry(
   data: AppData,
   exerciseId: string,
-  fn: (sets: AppData['sessions'][number]['entries'][number]) => void,
+  fn: (entry: AppData['sessions'][number]['entries'][number]) => void,
 ): AppData {
-  const date = todayISO()
-  const sessions = [...data.sessions]
-  let index = sessions.findIndex((s) => s.date === date)
-  if (index === -1) {
-    sessions.push(newSession(date))
-    index = sessions.length - 1
-  }
-  const session = structuredClone(sessions[index])
-  let entry = session.entries.find((e) => e.exerciseId === exerciseId)
-  if (!entry) {
-    entry = { exerciseId, sets: [] }
-    session.entries.push(entry)
-  }
-  fn(entry)
-  session.entries = session.entries.filter((e) => e.sets.length > 0 || (e.note ?? '') !== '')
-  sessions[index] = session
-  return { ...data, sessions: sessions.filter((s) => s.entries.length > 0) }
+  return editToday(data, (session) => {
+    let entry = session.entries.find((e) => e.exerciseId === exerciseId)
+    if (!entry) {
+      entry = { exerciseId, sets: [] }
+      session.entries.push(entry)
+    }
+    fn(entry)
+    session.entries = session.entries.filter((e) => e.sets.length > 0 || (e.note ?? '') !== '')
+  })
 }
 
 export function StoreProvider({ children }: { children: ReactNode }) {
@@ -101,6 +113,19 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         setData((d) =>
           editEntry(d, exerciseId, (e) => {
             e.note = note
+          }),
+        ),
+      logActivity: (type, minutes) =>
+        setData((d) =>
+          editToday(d, (session) => {
+            const activity: Activity = { type, minutes }
+            session.activities = [...(session.activities ?? []), activity]
+          }),
+        ),
+      removeActivity: (index) =>
+        setData((d) =>
+          editToday(d, (session) => {
+            session.activities = (session.activities ?? []).filter((_, i) => i !== index)
           }),
         ),
       addExercise: (exercise) =>

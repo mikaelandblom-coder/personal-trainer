@@ -13,10 +13,38 @@ export interface Exercise {
   name: string
   /** Key into the icon set. */
   icon: string
+  /** The group this exercise is filed under and loads fully. */
   group: MuscleGroup
   equipment: Equipment
+  /**
+   * Secondary load, 0-1 per group. This is what makes "don't hit the same
+   * muscle two days running" work: bench already taxes triceps and front
+   * delts, so an overhead press the next day is not a fresh session.
+   */
+  also?: Partial<Record<MuscleGroup, number>>
   /** Custom exercises are user-created and can be deleted. */
   custom?: boolean
+}
+
+export type ActivityType = string
+
+/** Non-gym training: badminton, cycling, anything measured in time. */
+export interface ActivityKind {
+  id: ActivityType
+  name: string
+  icon: string
+  /** Load per group, 0-1, at `fullMinutes` of it. */
+  loads: Partial<Record<MuscleGroup, number>>
+  /** Duration at which the loads above are reached. */
+  fullMinutes: number
+  /** Preset durations offered on the log screen. */
+  presets: number[]
+}
+
+export interface Activity {
+  type: ActivityType
+  minutes: number
+  note?: string
 }
 
 /** A single set. No reps — every set is taken to failure. */
@@ -37,6 +65,8 @@ export interface Session {
   /** ISO date, local day granularity: YYYY-MM-DD. */
   date: string
   entries: Entry[]
+  /** Badminton, cycling and the like, logged as duration rather than sets. */
+  activities?: Activity[]
 }
 
 export type Unit = 'kg' | 'lb'

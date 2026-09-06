@@ -18,6 +18,26 @@ and pushes a JSON snapshot of the whole history to this repo when you ask it to.
 A set can be flagged (the flag icon) when it felt bad or got cut short — that
 context is what makes a dip in the numbers readable months later.
 
+## What to train today
+
+The workout screen opens with a recommendation — **Legs**, **Upper — push**,
+**Upper — pull**, or **Rest** — and the reason behind it. Tap it for the full
+recovery board: every muscle group, when it was last loaded, and by what.
+
+This exists because of one rule: don't work the same muscle two days running.
+Enforcing that needs more than a per-exercise group label, so every exercise
+carries a secondary load map (`also` in `src/data/exercises.ts`). Bench press
+loads chest fully, shoulders at 0.5 and triceps at 0.5 — so an overhead press
+the next day is flagged, not waved through.
+
+Non-gym training goes into the same model. Two hours of badminton is a heavy
+leg session and a real shoulder session, so it blocks leg day exactly like
+squats would. Log it under **Activity**; it's measured in minutes, not sets.
+
+A group counts as worked when a day's total load for it reaches 0.5. Exercise
+tiles turn red-edged when they'd hit something worked today or yesterday, so
+the warning is visible before the set, not after.
+
 ## Progress
 
 The **Progress** tab tracks top set over time per exercise, tags a session that
@@ -41,6 +61,26 @@ comment on stalls, imbalances, and when to deload. If you'd rather not use a
 token, **Copy JSON** puts the same snapshot on the clipboard to paste into a
 conversation.
 
+## Samsung Health
+
+There is no automatic import. Samsung's current path for third-party access is
+the Android-native Samsung Health Data SDK, and the practical route for
+everyone else is Health Connect — also an Android API. A web app in a browser
+can read neither, so this app cannot pull from Samsung Health as-is.
+
+Three ways forward, if it becomes worth it:
+
+- **Manual export.** Samsung Health can export your data as CSVs. A one-off
+  importer could map its exercise sessions onto activities here.
+- **Native shell.** Wrapping the app with Capacitor and a Health Connect plugin
+  would let badminton and rides sync automatically. It also turns this into an
+  Android project with a signing key and a release process.
+- **Strava as a bridge.** Samsung Health can sync to Strava, and Strava has a
+  normal OAuth REST API a web app can call. Needs a small backend to hold the
+  client secret.
+
+Until then, logging a session takes two taps.
+
 ## Development
 
 ```sh
@@ -59,10 +99,12 @@ is served from `/personal-trainer/`, which is set as `base` in `vite.config.ts`
 
 | Path | What's in it |
 | --- | --- |
-| `src/data/exercises.ts` | The 45-exercise catalog and its muscle groups |
+| `src/data/exercises.ts` | The 45-exercise catalog, muscle groups and secondary loads |
+| `src/data/activities.ts` | Badminton, cycling and cardio, with their load maps |
 | `src/icons/glyphs.tsx` | One hand-drawn SVG pictogram per exercise |
 | `src/icons/parts.tsx` | Shared drawing parts (barbell, dumbbell, stack, floor) |
 | `src/lib/derive.ts` | Top set, PR, trend and stall calculations |
+| `src/lib/recovery.ts` | Muscle load model, recovery board and the daily plan |
 | `src/lib/sync.ts` | GitHub Contents API push/pull |
 | `src/store.tsx` | App state and local persistence |
 | `scripts/gen-icons.mjs` | Regenerates the PWA PNG app icons |
