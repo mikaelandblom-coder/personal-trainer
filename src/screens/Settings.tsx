@@ -119,6 +119,28 @@ export function Settings() {
         </div>
       </div>
 
+      <div className="section-label">Recovery</div>
+      <div className="card">
+        <div className="field" style={{ marginBottom: 6 }}>
+          <label htmlFor="recovery">Hours before a muscle group can be trained hard again</label>
+          <input
+            id="recovery"
+            type="text"
+            inputMode="numeric"
+            value={String(settings.recoveryHours)}
+            onChange={(e) => {
+              const n = Number(e.target.value)
+              if (Number.isFinite(n) && n >= 0 && n <= 336) store.updateSettings({ recoveryHours: n })
+            }}
+          />
+        </div>
+        <div className="hint" style={{ margin: 0 }}>
+          Counted from the last set, not from midnight. Sessions logged before
+          this app recorded clock times are assumed to have ended at 23:59 on
+          their day, which errs toward waiting rather than clearing early.
+        </div>
+      </div>
+
       <div className="section-label">Backup to GitHub</div>
       <div className="card">
         <div className="field">

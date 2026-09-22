@@ -9,6 +9,7 @@ export const DEFAULT_DATA: AppData = {
   settings: {
     unit: 'kg',
     step: 2.5,
+    recoveryHours: 46,
     hidden: [],
     sync: {
       token: '',

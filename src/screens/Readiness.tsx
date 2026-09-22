@@ -1,5 +1,12 @@
 import { useState } from 'react'
-import { describeGroupState, explainBlocked, suggestPlan } from '../lib/recovery'
+import {
+  describeGroupState,
+  explainBlocked,
+  formatElapsed,
+  formatUntil,
+  isBlocked,
+  suggestPlan,
+} from '../lib/recovery'
 import type { GroupState } from '../lib/recovery'
 import { useStore } from '../store'
 
@@ -44,7 +51,7 @@ export function Readiness({ board }: { board: GroupState[] }) {
         <span className="plan-toggle">{open ? 'Hide' : 'Details'}</span>
       </button>
       <p className="plan-reason">{plan.reason}</p>
-      {blocked && <p className="plan-blocked">Hold off on {blocked}.</p>}
+      {blocked && <p className="plan-blocked">Still recovering: {blocked}.</p>}
 
       <div className="dots">
         {board.map((b) => (
@@ -61,22 +68,21 @@ export function Readiness({ board }: { board: GroupState[] }) {
             <div className="board-row" key={b.group}>
               <span className={`board-name ${b.status}`}>{b.label}</span>
               <span className="board-when">
-                {b.daysSince === undefined
+                {b.hoursSince === undefined
                   ? 'not trained yet'
-                  : b.daysSince === 0
-                    ? 'worked today'
-                    : b.daysSince === 1
-                      ? 'yesterday'
-                      : `${b.daysSince} days ago`}
-                {b.cause && b.daysSince !== undefined ? ` · ${b.cause}` : ''}
+                  : `${formatElapsed(b.hoursSince)} ago`}
+                {b.cause && b.hoursSince !== undefined ? ` · ${b.cause}` : ''}
               </span>
-              <span className={`board-status ${b.status}`}>{STATUS_LABEL[b.status]}</span>
+              <span className={`board-status ${b.status}`}>
+                {isBlocked(b) ? `in ${formatUntil(b.hoursUntilReady)}` : STATUS_LABEL[b.status]}
+              </span>
             </div>
           ))}
           <p className="plan-reason" style={{ marginTop: 10 }}>
             A group counts as worked when a session loads it at least halfway —
             secondary load included, so bench counts toward shoulders and triceps,
-            and badminton counts toward legs.
+            and badminton counts toward legs. The clock runs from the last set,
+            not from midnight, so an evening session clears in the evening.
           </p>
         </div>
       )}

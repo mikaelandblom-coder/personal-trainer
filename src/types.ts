@@ -45,6 +45,8 @@ export interface Activity {
   type: ActivityType
   minutes: number
   note?: string
+  /** ISO timestamp; see SetEntry.at. */
+  at?: string
 }
 
 /** A single set. No reps — every set is taken to failure. */
@@ -52,6 +54,12 @@ export interface SetEntry {
   weight: number
   /** Marked when the set felt bad, was cut short, or form broke down. */
   flagged?: boolean
+  /**
+   * ISO timestamp of when the set was logged. Recovery is measured in hours,
+   * not calendar days, so this is what the 46-hour rule keys off. Absent on
+   * sets recorded before timestamps existed.
+   */
+  at?: string
 }
 
 export interface Entry {
@@ -75,6 +83,8 @@ export interface Settings {
   unit: Unit
   /** Increment used by the +/- steppers. */
   step: number
+  /** Hours a muscle group needs before it is trained hard again. */
+  recoveryHours: number
   /** Exercise ids the user has hidden from the home grid. */
   hidden: string[]
   sync: SyncSettings

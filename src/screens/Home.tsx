@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { ACTIVITIES } from '../data/activities'
 import { GROUPS } from '../data/exercises'
 import { ExerciseIcon } from '../icons/ExerciseIcon'
@@ -12,6 +12,19 @@ import { Readiness } from './Readiness'
 
 type Filter = 'all' | 'activity' | MuscleGroup
 
+/**
+ * Recovery is a countdown, so the board goes stale if the app is left open.
+ * Ticking every minute keeps "ready in 2h" honest without any real cost.
+ */
+function useNow(intervalMs = 60_000): number {
+  const [now, setNow] = useState(() => Date.now())
+  useEffect(() => {
+    const id = setInterval(() => setNow(Date.now()), intervalMs)
+    return () => clearInterval(id)
+  }, [intervalMs])
+  return now
+}
+
 export function Home({
   onOpen,
   onOpenActivity,
@@ -22,9 +35,10 @@ export function Home({
   const { allExercises, sessions, settings, exerciseById } = useStore()
   const [filter, setFilter] = useState<Filter>('all')
 
+  const now = useNow()
   const board = useMemo(
-    () => recoveryBoard(sessions, exerciseById),
-    [sessions, exerciseById],
+    () => recoveryBoard(sessions, exerciseById, settings.recoveryHours, now),
+    [sessions, exerciseById, settings.recoveryHours, now],
   )
 
   const today = sessions.find((s) => s.date === todayISO())

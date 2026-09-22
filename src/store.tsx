@@ -93,7 +93,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       allExercises,
       exerciseById,
       logSet: (exerciseId, weight) =>
-        setData((d) => editEntry(d, exerciseId, (e) => e.sets.push({ weight }))),
+        setData((d) =>
+          editEntry(d, exerciseId, (e) => e.sets.push({ weight, at: new Date().toISOString() })),
+        ),
       updateSet: (exerciseId, index, weight) =>
         setData((d) =>
           editEntry(d, exerciseId, (e) => {
@@ -118,7 +120,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       logActivity: (type, minutes) =>
         setData((d) =>
           editToday(d, (session) => {
-            const activity: Activity = { type, minutes }
+            const activity: Activity = { type, minutes, at: new Date().toISOString() }
             session.activities = [...(session.activities ?? []), activity]
           }),
         ),
