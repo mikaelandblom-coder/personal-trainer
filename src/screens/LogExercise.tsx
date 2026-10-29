@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from 'react'
-import { ExerciseIcon } from '../icons/ExerciseIcon'
 import { Flag, Minus, Plus, Trash } from '../icons/ui'
 import { relativeDay, todayISO } from '../lib/dates'
 import { formatSets, historyFor, isStalled, personalBest, sessionsSinceProgress } from '../lib/derive'
@@ -163,10 +162,6 @@ export function LogExercise({ exerciseId }: { exerciseId: string }) {
 
       <div className="section-label">History</div>
       <History exerciseId={exerciseId} />
-
-      <div style={{ display: 'none' }}>
-        <ExerciseIcon name={exercise.icon} />
-      </div>
     </>
   )
 }

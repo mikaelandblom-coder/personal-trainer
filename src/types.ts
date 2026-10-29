@@ -11,8 +11,6 @@ export type Equipment = 'barbell' | 'dumbbell' | 'machine' | 'cable' | 'bodyweig
 export interface Exercise {
   id: string
   name: string
-  /** Key into the icon set. */
-  icon: string
   /** The group this exercise is filed under and loads fully. */
   group: MuscleGroup
   equipment: Equipment
@@ -32,7 +30,8 @@ export type ActivityType = string
 export interface ActivityKind {
   id: ActivityType
   name: string
-  icon: string
+  /** Which mark appears in the icon's corner. */
+  badge: 'badminton' | 'cycling' | 'cardio'
   /** Load per group, 0-1, at `fullMinutes` of it. */
   loads: Partial<Record<MuscleGroup, number>>
   /** Duration at which the loads above are reached. */
