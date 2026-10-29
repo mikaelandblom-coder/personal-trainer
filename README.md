@@ -20,25 +20,22 @@ context is what makes a dip in the numbers readable months later.
 
 ## Icons
 
-Icons are muscle maps, not drawings of the movement. A figure performing a lift
-is unreadable at tile size — torso, arms and legs land on two or three pixels
-each, so a squat and a lunge collapse into the same shape. What an exercise
-*trains* survives that scale, because it is areas of colour rather than thin
-lines.
+Each exercise icon has two halves.
 
-Each icon is generated from the exercise's own data: the primary group at full
-strength, secondaries shaded in proportion to their load, and a corner mark for
-barbell / dumbbell / cable / machine / bodyweight. Nothing is hand-drawn per
-exercise, so a new exercise gets a correct icon for free.
+- **What it trains.** A muscle map built from the exercise's own load data.
+  The primary group is solid, secondary groups are shaded by their share, and
+  the rest stays faint. Back exercises, plus rear delts, hamstrings, glutes and
+  triceps, show the figure from behind.
+- **How it moves.** A movement cue above an equipment mark. The cue only has
+  to separate exercises that train the same muscles. Incline gets a tilted bench
+  and flat gets a flat one. The body sits on the left, so an arrow pointing
+  right is a push and one pointing left is a pull. Curl and extension arcs turn
+  opposite ways.
 
-The payoff is that the icon and the recovery rules speak the same language.
-When a muscle is still inside its window, that muscle turns red in the icon —
-so a lat pulldown with recovered lats and tired biceps shows green lats and red
-arms, and you can see which half of the exercise is the problem.
-
-The tradeoff, accepted knowingly: variations of one movement pattern look alike.
-Bench Press and Incline Bench differ only by a slightly brighter deltoid. The
-label carries that distinction.
+The map and the recovery rules use the same numbers. While a muscle is still
+inside its recovery window, it turns red in the icon. A lat pulldown with
+rested lats and tired biceps shows red arms, so you can see which part of the
+exercise is the problem.
 
 ## What to train today
 
@@ -123,16 +120,28 @@ is served from `/personal-trainer/`, which is set as `base` in `vite.config.ts`
 | --- | --- |
 | `src/data/exercises.ts` | The 45-exercise catalog, muscle groups and secondary loads |
 | `src/data/activities.ts` | Badminton, cycling and cardio, with their load maps |
-| `src/icons/MuscleIcon.tsx` | Muscle-map icons, derived from each exercise's load data |
+| `src/icons/body.tsx` | The muscle map, shaded from each exercise's loads |
+| `src/icons/bodyPaths.ts` | Front and back figure outlines, generated — don't edit |
+| `src/icons/glyphs.tsx` | Movement cue and equipment mark per exercise |
+| `src/icons/parts.tsx` | Shared cue arrows and equipment marks |
 | `src/lib/derive.ts` | Top set, PR, trend and stall calculations |
 | `src/lib/recovery.ts` | Muscle load model, recovery board and the daily plan |
 | `src/lib/sync.ts` | GitHub Contents API push/pull |
 | `src/store.tsx` | App state and local persistence |
 | `scripts/gen-icons.mjs` | Regenerates the PWA PNG app icons |
+| `scripts/trace-muscle-map.py` | Traces `art/muscle-map.png` into `bodyPaths.ts` |
 
 ### Adding an exercise
 
-Add an entry to `CATALOG` in `src/data/exercises.ts`. There is no icon to draw:
-the icon is generated from `group`, `also` and `equipment`, so filling those in
-correctly is the whole job. Exercises can also be added from Settings at
-runtime, which asks for the same three things.
+Add an entry to `CATALOG` in `src/data/exercises.ts` and a matching glyph keyed
+by its `icon` in `src/icons/glyphs.tsx`.
+
+The muscle map beside the cue needs no drawing: it comes from `group` and
+`also`, so filling those in correctly is most of the job. Exercises can also be
+added from Settings at runtime. That form asks for the main group, equipment
+and secondary muscles. Custom exercises get the muscle map and an equipment
+mark but no movement cue.
+
+The figure is traced from `art/muscle-map.png`, a colour-coded image with one
+flat colour per group. To change the body, replace that image and rerun
+`scripts/trace-muscle-map.py`.

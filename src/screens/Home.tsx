@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useState } from 'react'
 import { ACTIVITIES } from '../data/activities'
 import { GROUPS } from '../data/exercises'
-import { ActivityIcon, ExerciseIcon } from '../icons/MuscleIcon'
+import { ExerciseIcon } from '../icons/ExerciseIcon'
 import { formatSets, isStalled, lastPerformance, recentExerciseIds } from '../lib/derive'
 import { todayISO } from '../lib/dates'
-import { conflictsWith, recoveryBoard } from '../lib/recovery'
+import { conflictsWith, exerciseLoads, recoveryBoard } from '../lib/recovery'
 import type { GroupState } from '../lib/recovery'
 import { useStore } from '../store'
 import type { MuscleGroup } from '../types'
@@ -133,7 +133,7 @@ export function Home({
                   onClick={() => onOpenActivity(a.id)}
                 >
                   {mins > 0 && <span className="badge">{mins}m</span>}
-                  <ActivityIcon kind={a} />
+                  <ExerciseIcon icon={a.icon} loads={a.loads} />
                   <span className="label">{a.name}</span>
                 </button>
               )
@@ -187,7 +187,12 @@ function Tile({
     >
       {done && <span className="badge">{todayEntry?.sets.length}</span>}
       {!done && stalled && <span className="badge">•</span>}
-      <ExerciseIcon exercise={exercise} alert={conflicts.map((c) => c.group)} />
+      <ExerciseIcon
+        icon={exercise.icon}
+        equipment={exercise.equipment}
+        loads={exerciseLoads(exercise)}
+        alert={conflicts.map((c) => c.group)}
+      />
       <span className="label">{exercise.name}</span>
       {conflicts.length > 0 ? (
         <span className="last warn">{conflicts.map((c) => c.label.toLowerCase()).join(' · ')}</span>

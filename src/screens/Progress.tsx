@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { GROUPS } from '../data/exercises'
-import { ExerciseIcon } from '../icons/MuscleIcon'
+import { ExerciseIcon } from '../icons/ExerciseIcon'
+import { exerciseLoads } from '../lib/recovery'
 import { daysBetween, relativeDay, todayISO } from '../lib/dates'
 import {
   historyFor,
@@ -125,7 +126,7 @@ function ExerciseCard({
   return (
     <button className="card" style={{ display: 'block', width: '100%', textAlign: 'left' }} onClick={() => onOpen(id)}>
       <div className="card-head">
-        <ExerciseIcon exercise={exercise} size={30} />
+        <ExerciseIcon icon={exercise.icon} equipment={exercise.equipment} loads={exerciseLoads(exercise)} size={28} />
         <div className="name">
           {exercise.name}
           {atPR && <span className="tag pr">PR</span>}

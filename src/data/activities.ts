@@ -9,7 +9,7 @@ export const ACTIVITIES: ActivityKind[] = [
   {
     id: 'badminton',
     name: 'Badminton',
-    badge: 'badminton',
+    icon: 'badminton',
     // Repeated lunging and overhead work — legs first, shoulders close behind.
     loads: { legs: 0.85, shoulders: 0.5, core: 0.35, arms: 0.25, back: 0.2 },
     fullMinutes: 90,
@@ -18,7 +18,7 @@ export const ACTIVITIES: ActivityKind[] = [
   {
     id: 'cycling',
     name: 'Cycling',
-    badge: 'cycling',
+    icon: 'cycling',
     loads: { legs: 0.45, core: 0.1 },
     fullMinutes: 60,
     presets: [15, 30, 45, 60],
@@ -26,7 +26,7 @@ export const ACTIVITIES: ActivityKind[] = [
   {
     id: 'cardio',
     name: 'Other Cardio',
-    badge: 'cardio',
+    icon: 'cardio',
     loads: { legs: 0.35, core: 0.15 },
     fullMinutes: 45,
     presets: [20, 30, 45, 60],

@@ -9,9 +9,6 @@
   --accent: #6ee7b7;
   --accent-dim: #1d3b31;
   --warn: #fbbf24;
-  /* Unworked muscle in the icon silhouette, and the equipment mark. */
-  --body-dim: #2f3742;
-  --badge: #8b96a6;
   --down: #f87171;
   --radius: 14px;
   --tap: 48px;
@@ -153,13 +150,12 @@ button {
 
 .tile {
   position: relative;
-  color: var(--accent);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 7px;
-  min-height: 110px;
+  min-height: 102px;
   padding: 12px 8px 10px;
   border-radius: var(--radius);
   background: var(--surface);
@@ -177,10 +173,6 @@ button {
   font-size: 12.5px;
   line-height: 1.25;
   color: var(--text);
-}
-
-.tile.done {
-  color: var(--accent);
 }
 
 .tile .last {
