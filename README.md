@@ -102,6 +102,7 @@ is served from `/personal-trainer/`, which is set as `base` in `vite.config.ts`
 | `src/data/exercises.ts` | The 45-exercise catalog, muscle groups and secondary loads |
 | `src/data/activities.ts` | Badminton, cycling and cardio, with their load maps |
 | `src/icons/body.tsx` | The muscle map, shaded from each exercise's loads |
+| `src/icons/bodyPaths.ts` | Front and back figure outlines, generated — don't edit |
 | `src/icons/glyphs.tsx` | Movement cue and equipment mark per exercise |
 | `src/icons/parts.tsx` | Shared cue arrows and equipment marks |
 | `src/lib/derive.ts` | Top set, PR, trend and stall calculations |
@@ -109,6 +110,7 @@ is served from `/personal-trainer/`, which is set as `base` in `vite.config.ts`
 | `src/lib/sync.ts` | GitHub Contents API push/pull |
 | `src/store.tsx` | App state and local persistence |
 | `scripts/gen-icons.mjs` | Regenerates the PWA PNG app icons |
+| `scripts/trace-muscle-map.py` | Traces `art/muscle-map.png` into `bodyPaths.ts` |
 
 ### Adding an exercise
 
@@ -117,8 +119,11 @@ by its `icon` in `src/icons/glyphs.tsx`.
 
 Each icon has two halves. On the left, a muscle map filled from the exercise's
 `group` and `also` loads: the primary group solid, secondaries as strong as their
-share, the rest faint. So the icon always agrees with the recovery model, and
-the map needs no drawing work. On the right (x 16-23.6 of the 24x24 grid), the
+share, the rest faint. Back exercises (and rear delts, hamstrings and triceps)
+use the back view. So the icon always agrees with the recovery model, and
+the map needs no drawing work. The figure is traced from `art/muscle-map.png`,
+a colour-coded image with one flat colour per group. To change the body,
+replace that image and rerun `scripts/trace-muscle-map.py`. On the right (x 16-23.6 of the 24x24 grid), the
 glyph draws a movement cue on top and an equipment mark below. The cue only has
 to separate exercises that train the same muscles. The body sits to the left,
 so an arrow pointing right is a push and one pointing left is a pull. Exercises

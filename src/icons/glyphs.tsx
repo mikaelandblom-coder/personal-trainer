@@ -33,6 +33,18 @@ import {
 } from './parts'
 
 /**
+ * Exercises shown on the back view of the figure: everything that mainly works
+ * the back, plus the ones whose target sits on the rear of the body — rear
+ * delts, hamstrings and glutes, triceps.
+ */
+export const BACK_VIEW = new Set([
+  'pulldown', 'pullup', 'seated-row', 'bb-row', 'db-row', 't-bar', 'deadlift', 'straight-arm',
+  'rear-delt', 'face-pull', 'shrug',
+  'leg-curl', 'rdl', 'hip-thrust',
+  'pushdown', 'oh-ext', 'skull',
+])
+
+/**
  * The right-hand column of each icon: how the weight moves, and with what.
  * The muscle map beside it comes from the exercise's load data, so these only
  * need to separate exercises that train the same muscles — bench from incline,

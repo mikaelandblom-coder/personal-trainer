@@ -1,5 +1,5 @@
 import { Body, type Loads } from './body'
-import { GLYPHS } from './glyphs'
+import { BACK_VIEW, GLYPHS } from './glyphs'
 import { Barbell } from './parts'
 
 /** Fallback for custom exercises whose icon key isn't in the set. */
@@ -8,7 +8,8 @@ const Generic = Barbell
 /**
  * Muscle map on the left, driven by `loads` (primary group at 1, secondaries
  * at their share — the same numbers the recovery model uses), with the
- * movement cue and equipment mark for `icon` on the right.
+ * movement cue and equipment mark for `icon` on the right. Back exercises, and
+ * any custom exercise filed under back, show the figure from behind.
  */
 export function ExerciseIcon({
   icon,
@@ -33,7 +34,7 @@ export function ExerciseIcon({
       aria-hidden="true"
       focusable="false"
     >
-      <Body loads={loads} />
+      <Body loads={loads} view={BACK_VIEW.has(icon) || loads.back === 1 ? 'back' : 'front'} />
       <Glyph />
     </svg>
   )
