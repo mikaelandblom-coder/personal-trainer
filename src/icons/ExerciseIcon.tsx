@@ -1,18 +1,25 @@
+import { Body, type Loads } from './body'
 import { GLYPHS } from './glyphs'
+import { Barbell } from './parts'
 
 /** Fallback for custom exercises whose icon key isn't in the set. */
-function Generic() {
-  return (
-    <>
-      <line x1="4" y1="12" x2="20" y2="12" />
-      <rect x="5" y="9" width="2" height="6" rx="0.6" fill="currentColor" stroke="none" />
-      <rect x="17" y="9" width="2" height="6" rx="0.6" fill="currentColor" stroke="none" />
-    </>
-  )
-}
+const Generic = Barbell
 
-export function ExerciseIcon({ name, size = 34 }: { name: string; size?: number }) {
-  const Glyph = GLYPHS[name] ?? Generic
+/**
+ * Muscle map on the left, driven by `loads` (primary group at 1, secondaries
+ * at their share — the same numbers the recovery model uses), with the
+ * movement cue and equipment mark for `icon` on the right.
+ */
+export function ExerciseIcon({
+  icon,
+  loads,
+  size = 44,
+}: {
+  icon: string
+  loads: Loads
+  size?: number
+}) {
+  const Glyph = GLYPHS[icon] ?? Generic
   return (
     <svg
       viewBox="0 0 24 24"
@@ -20,12 +27,13 @@ export function ExerciseIcon({ name, size = 34 }: { name: string; size?: number 
       height={size}
       fill="none"
       stroke="currentColor"
-      strokeWidth={1.4}
+      strokeWidth={1.2}
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden="true"
       focusable="false"
     >
+      <Body loads={loads} />
       <Glyph />
     </svg>
   )

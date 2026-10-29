@@ -101,8 +101,9 @@ is served from `/personal-trainer/`, which is set as `base` in `vite.config.ts`
 | --- | --- |
 | `src/data/exercises.ts` | The 45-exercise catalog, muscle groups and secondary loads |
 | `src/data/activities.ts` | Badminton, cycling and cardio, with their load maps |
-| `src/icons/glyphs.tsx` | One hand-drawn SVG pictogram per exercise |
-| `src/icons/parts.tsx` | Shared drawing parts (barbell, dumbbell, stack, floor) |
+| `src/icons/body.tsx` | The muscle map, shaded from each exercise's loads |
+| `src/icons/glyphs.tsx` | Movement cue and equipment mark per exercise |
+| `src/icons/parts.tsx` | Shared cue arrows and equipment marks |
 | `src/lib/derive.ts` | Top set, PR, trend and stall calculations |
 | `src/lib/recovery.ts` | Muscle load model, recovery board and the daily plan |
 | `src/lib/sync.ts` | GitHub Contents API push/pull |
@@ -112,6 +113,14 @@ is served from `/personal-trainer/`, which is set as `base` in `vite.config.ts`
 ### Adding an exercise
 
 Add an entry to `CATALOG` in `src/data/exercises.ts` and a matching glyph keyed
-by its `icon` in `src/icons/glyphs.tsx`. Glyphs are drawn on a 24×24 grid with
-the floor at `y=21` and use `currentColor`, so they inherit the theme. Exercises
-can also be added from Settings at runtime, picking from the existing icon set.
+by its `icon` in `src/icons/glyphs.tsx`.
+
+Each icon has two halves. On the left, a muscle map filled from the exercise's
+`group` and `also` loads: the primary group solid, secondaries as strong as their
+share, the rest faint. So the icon always agrees with the recovery model, and
+the map needs no drawing work. On the right (x 16-23.6 of the 24x24 grid), the
+glyph draws a movement cue on top and an equipment mark below. The cue only has
+to separate exercises that train the same muscles. The body sits to the left,
+so an arrow pointing right is a push and one pointing left is a pull. Exercises
+can also be added from Settings at runtime, picking a cue and equipment pair
+from the existing set.

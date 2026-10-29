@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { CATALOG, GROUPS } from '../data/exercises'
 import { ExerciseIcon, ICON_KEYS } from '../icons/ExerciseIcon'
+import { exerciseLoads } from '../lib/recovery'
 import { exportPayload, migrate } from '../lib/storage'
 import { pull, push } from '../lib/sync'
 import { useStore } from '../store'
@@ -252,7 +253,7 @@ function ManageExercises() {
                     const hidden = settings.hidden.includes(e.id)
                     return (
                       <div className={`manage ${hidden ? 'off' : ''}`} key={e.id}>
-                        <ExerciseIcon name={e.icon} size={24} />
+                        <ExerciseIcon icon={e.icon} loads={exerciseLoads(e)} size={24} />
                         <span className="mname">{e.name}</span>
                         <button
                           className="pill"
@@ -344,7 +345,7 @@ function AddExercise({ onDone }: { onDone: (text: string) => void }) {
                   onClick={() => setIcon(key)}
                   aria-label={key}
                 >
-                  <ExerciseIcon name={key} size={28} />
+                  <ExerciseIcon icon={key} loads={{ [group]: 1 }} size={28} />
                 </button>
               ))}
             </div>

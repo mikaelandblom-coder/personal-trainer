@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { activityById } from './data/activities'
 import { ExerciseIcon } from './icons/ExerciseIcon'
+import { exerciseLoads } from './lib/recovery'
 import { Back, Chart, Dumbbells, Gear } from './icons/ui'
 import { formatDay, todayISO } from './lib/dates'
 import { Home } from './screens/Home'
@@ -66,7 +67,11 @@ export function App() {
               <Back />
             </button>
             <span style={{ color: 'var(--accent)', display: 'flex' }}>
-              <ExerciseIcon name={detail.icon} size={28} />
+              <ExerciseIcon
+                icon={detail.icon}
+                loads={exercise ? exerciseLoads(exercise) : (activity?.loads ?? {})}
+                size={28}
+              />
             </span>
             <h1>{detail.name}</h1>
           </>
