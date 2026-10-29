@@ -23,17 +23,31 @@ export function shade(load: number | undefined): number {
   return 0.22 + 0.56 * load
 }
 
-export function Body({ loads, view }: { loads: Loads; view: View }): JSX.Element {
+export function Body({
+  loads,
+  view,
+  alert,
+}: {
+  loads: Loads
+  view: View
+  /** Groups still recovering, drawn in the warning colour. */
+  alert?: MuscleGroup[]
+}): JSX.Element {
   const paths = BODY_PATHS[view]
   return (
     <g stroke="none" fill="currentColor" fillRule="evenodd">
-      {(Object.keys(paths) as Region[]).map((region) => (
-        <path
-          key={region}
-          d={paths[region]}
-          fillOpacity={region === 'neutral' ? NEUTRAL : shade(loads[region])}
-        />
-      ))}
+      {(Object.keys(paths) as Region[]).map((region) =>
+        region === 'neutral' ? (
+          <path key={region} d={paths[region]} fillOpacity={NEUTRAL} />
+        ) : (
+          <path
+            key={region}
+            d={paths[region]}
+            fill={alert?.includes(region) ? 'var(--down)' : undefined}
+            fillOpacity={shade(loads[region])}
+          />
+        ),
+      )}
     </g>
   )
 }

@@ -18,6 +18,25 @@ and pushes a JSON snapshot of the whole history to this repo when you ask it to.
 A set can be flagged (the flag icon) when it felt bad or got cut short — that
 context is what makes a dip in the numbers readable months later.
 
+## Icons
+
+Each exercise icon has two halves.
+
+- **What it trains.** A muscle map built from the exercise's own load data.
+  The primary group is solid, secondary groups are shaded by their share, and
+  the rest stays faint. Back exercises, plus rear delts, hamstrings, glutes and
+  triceps, show the figure from behind.
+- **How it moves.** A movement cue above an equipment mark. The cue only has
+  to separate exercises that train the same muscles. Incline gets a tilted bench
+  and flat gets a flat one. The body sits on the left, so an arrow pointing
+  right is a push and one pointing left is a pull. Curl and extension arcs turn
+  opposite ways.
+
+The map and the recovery rules use the same numbers. While a muscle is still
+inside its recovery window, it turns red in the icon. A lat pulldown with
+rested lats and tired biceps shows red arms, so you can see which part of the
+exercise is the problem.
+
 ## What to train today
 
 The workout screen opens with a recommendation — **Legs**, **Upper — push**,
@@ -117,15 +136,12 @@ is served from `/personal-trainer/`, which is set as `base` in `vite.config.ts`
 Add an entry to `CATALOG` in `src/data/exercises.ts` and a matching glyph keyed
 by its `icon` in `src/icons/glyphs.tsx`.
 
-Each icon has two halves. On the left, a muscle map filled from the exercise's
-`group` and `also` loads: the primary group solid, secondaries as strong as their
-share, the rest faint. Back exercises (and rear delts, hamstrings and triceps)
-use the back view. So the icon always agrees with the recovery model, and
-the map needs no drawing work. The figure is traced from `art/muscle-map.png`,
-a colour-coded image with one flat colour per group. To change the body,
-replace that image and rerun `scripts/trace-muscle-map.py`. On the right (x 16-23.6 of the 24x24 grid), the
-glyph draws a movement cue on top and an equipment mark below. The cue only has
-to separate exercises that train the same muscles. The body sits to the left,
-so an arrow pointing right is a push and one pointing left is a pull. Exercises
-can also be added from Settings at runtime, picking a cue and equipment pair
-from the existing set.
+The muscle map beside the cue needs no drawing: it comes from `group` and
+`also`, so filling those in correctly is most of the job. Exercises can also be
+added from Settings at runtime. That form asks for the main group, equipment
+and secondary muscles. Custom exercises get the muscle map and an equipment
+mark but no movement cue.
+
+The figure is traced from `art/muscle-map.png`, a colour-coded image with one
+flat colour per group. To change the body, replace that image and rerun
+`scripts/trace-muscle-map.py`.

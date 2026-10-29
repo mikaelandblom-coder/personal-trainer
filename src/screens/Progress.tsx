@@ -126,7 +126,7 @@ function ExerciseCard({
   return (
     <button className="card" style={{ display: 'block', width: '100%', textAlign: 'left' }} onClick={() => onOpen(id)}>
       <div className="card-head">
-        <ExerciseIcon icon={exercise.icon} loads={exerciseLoads(exercise)} size={28} />
+        <ExerciseIcon icon={exercise.icon} equipment={exercise.equipment} loads={exerciseLoads(exercise)} size={28} />
         <div className="name">
           {exercise.name}
           {atPR && <span className="tag pr">PR</span>}

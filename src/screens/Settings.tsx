@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import { CATALOG, GROUPS } from '../data/exercises'
-import { ExerciseIcon, ICON_KEYS } from '../icons/ExerciseIcon'
+import { ExerciseIcon } from '../icons/ExerciseIcon'
 import { exerciseLoads } from '../lib/recovery'
 import { exportPayload, migrate } from '../lib/storage'
 import { pull, push } from '../lib/sync'
 import { useStore } from '../store'
-import type { Exercise, MuscleGroup, Unit } from '../types'
+import type { Equipment, Exercise, MuscleGroup, Unit } from '../types'
 
 type Status = { kind: 'ok' | 'err' | ''; text: string }
 
@@ -253,7 +253,7 @@ function ManageExercises() {
                     const hidden = settings.hidden.includes(e.id)
                     return (
                       <div className={`manage ${hidden ? 'off' : ''}`} key={e.id}>
-                        <ExerciseIcon icon={e.icon} loads={exerciseLoads(e)} size={24} />
+                        <ExerciseIcon icon={e.icon} equipment={e.equipment} loads={exerciseLoads(e)} size={26} />
                         <span className="mname">{e.name}</span>
                         <button
                           className="pill"
@@ -288,7 +288,14 @@ function AddExercise({ onDone }: { onDone: (text: string) => void }) {
   const [open, setOpen] = useState(false)
   const [name, setName] = useState('')
   const [group, setGroup] = useState<MuscleGroup>('chest')
-  const [icon, setIcon] = useState(ICON_KEYS[0])
+  const [equipment, setEquipment] = useState<Equipment>('machine')
+  const [also, setAlso] = useState<MuscleGroup[]>([])
+
+  const reset = () => {
+    setName('')
+    setAlso([])
+    setOpen(false)
+  }
 
   const submit = () => {
     const trimmed = name.trim()
@@ -298,16 +305,32 @@ function AddExercise({ onDone }: { onDone: (text: string) => void }) {
     let id = `custom-${base}`
     let n = 2
     while (taken.has(id)) id = `custom-${base}-${n++}`
-    const exercise: Exercise = { id, name: trimmed, icon, group, equipment: 'machine', custom: true }
+    const exercise: Exercise = {
+      id,
+      name: trimmed,
+      group,
+      equipment,
+      // A flat 0.5 is the honest default: enough to count as worked, without
+      // pretending to know how hard this lift hits a secondary muscle.
+      also: Object.fromEntries(also.map((g) => [g, 0.5])),
+      custom: true,
+    }
     store.addExercise(exercise)
-    setName('')
-    setOpen(false)
+    reset()
     onDone(`Added ${trimmed}.`)
+  }
+
+  const preview: Exercise = {
+    id: 'preview',
+    name: name || 'New exercise',
+    group,
+    equipment,
+    also: Object.fromEntries(also.map((g) => [g, 0.5])),
   }
 
   return (
     <div className="card">
-      <button className="primary ghost" onClick={() => setOpen((v) => !v)}>
+      <button className="primary ghost" onClick={() => (open ? reset() : setOpen(true))}>
         {open ? 'Cancel' : 'Add a custom exercise'}
       </button>
       {open && (
@@ -316,39 +339,59 @@ function AddExercise({ onDone }: { onDone: (text: string) => void }) {
             <label htmlFor="ex-name">Name</label>
             <input id="ex-name" value={name} onChange={(e) => setName(e.target.value)} />
           </div>
-          <div className="field">
-            <label htmlFor="ex-group">Muscle group</label>
-            <select
-              id="ex-group"
-              value={group}
-              onChange={(e) => setGroup(e.target.value as MuscleGroup)}
-            >
-              {GROUPS.map((g) => (
-                <option key={g.id} value={g.id}>
-                  {g.label}
-                </option>
-              ))}
-            </select>
+          <div className="row2">
+            <div className="field">
+              <label htmlFor="ex-group">Works mainly</label>
+              <select
+                id="ex-group"
+                value={group}
+                onChange={(e) => setGroup(e.target.value as MuscleGroup)}
+              >
+                {GROUPS.map((g) => (
+                  <option key={g.id} value={g.id}>
+                    {g.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="field">
+              <label htmlFor="ex-equip">Equipment</label>
+              <select
+                id="ex-equip"
+                value={equipment}
+                onChange={(e) => setEquipment(e.target.value as Equipment)}
+              >
+                {(['barbell', 'dumbbell', 'machine', 'cable', 'bodyweight'] as Equipment[]).map(
+                  (eq) => (
+                    <option key={eq} value={eq}>
+                      {eq[0].toUpperCase() + eq.slice(1)}
+                    </option>
+                  ),
+                )}
+              </select>
+            </div>
           </div>
           <div className="field">
-            <label>Icon</label>
-            <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(56px, 1fr))' }}>
-              {ICON_KEYS.map((key) => (
+            <label>Also works (counts toward recovery)</label>
+            <div className="filters" style={{ padding: 0, flexWrap: 'wrap' }}>
+              {GROUPS.filter((g) => g.id !== group).map((g) => (
                 <button
-                  key={key}
-                  className="tile"
-                  style={{
-                    minHeight: 56,
-                    borderColor: key === icon ? 'var(--accent)' : undefined,
-                    background: key === icon ? 'var(--accent-dim)' : undefined,
-                  }}
-                  onClick={() => setIcon(key)}
-                  aria-label={key}
+                  key={g.id}
+                  className={`pill ${also.includes(g.id) ? 'on' : ''}`}
+                  onClick={() =>
+                    setAlso((prev) =>
+                      prev.includes(g.id) ? prev.filter((x) => x !== g.id) : [...prev, g.id],
+                    )
+                  }
                 >
-                  <ExerciseIcon icon={key} loads={{ [group]: 1 }} size={28} />
+                  {g.label}
                 </button>
               ))}
             </div>
+          </div>
+          <div className="manage" style={{ borderBottom: 'none' }}>
+            <ExerciseIcon equipment={preview.equipment} loads={exerciseLoads(preview)} size={34} />
+            <span className="mname">{preview.name}</span>
           </div>
           <button className="primary" onClick={submit}>
             Add exercise

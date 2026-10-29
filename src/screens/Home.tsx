@@ -187,7 +187,12 @@ function Tile({
     >
       {done && <span className="badge">{todayEntry?.sets.length}</span>}
       {!done && stalled && <span className="badge">•</span>}
-      <ExerciseIcon icon={exercise.icon} loads={exerciseLoads(exercise)} />
+      <ExerciseIcon
+        icon={exercise.icon}
+        equipment={exercise.equipment}
+        loads={exerciseLoads(exercise)}
+        alert={conflicts.map((c) => c.group)}
+      />
       <span className="label">{exercise.name}</span>
       {conflicts.length > 0 ? (
         <span className="last warn">{conflicts.map((c) => c.label.toLowerCase()).join(' · ')}</span>

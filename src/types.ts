@@ -11,8 +11,11 @@ export type Equipment = 'barbell' | 'dumbbell' | 'machine' | 'cable' | 'bodyweig
 export interface Exercise {
   id: string
   name: string
-  /** Key into the icon set. */
-  icon: string
+  /**
+   * Key into the icon set: the movement cue drawn beside the muscle map.
+   * Custom exercises have none and get an equipment mark only.
+   */
+  icon?: string
   /** The group this exercise is filed under and loads fully. */
   group: MuscleGroup
   equipment: Equipment

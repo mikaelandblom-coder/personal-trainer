@@ -69,6 +69,7 @@ export function App() {
             <span style={{ color: 'var(--accent)', display: 'flex' }}>
               <ExerciseIcon
                 icon={detail.icon}
+                equipment={exercise?.equipment}
                 loads={exercise ? exerciseLoads(exercise) : (activity?.loads ?? {})}
                 size={28}
               />
